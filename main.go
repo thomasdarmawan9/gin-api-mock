@@ -1,16 +1,15 @@
 package main
 
 import (
-	// "fmt"
-	// "os"
-	"os"
-	"products/router"
-	// "regexp"
+	"gin-api/database"
+	"gin-api/routers"
 )
 
 func main() {
-	r := router.StartRouter()
-	port := os.Getenv("PORT")
+	database.StartDB()
 
-	r.Run(":"+port)
+	var PORT = ":8080"
+
+	routers.StartServer().Run(PORT)
+
 }
