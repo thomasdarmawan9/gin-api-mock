@@ -10,11 +10,11 @@ import (
 )
 
 var (
-	host     = "localhost"
+	host     = "containers-us-west-80.railway.app"
 	user     = "postgres"
-	password = "123456"
-	dbPort   = "5433"
-	dbname   = "universal"
+	password = "dIoZwlyuHiVVbT9vABVe"
+	dbPort   = "5583"
+	dbname   = "railway"
 	db       *gorm.DB
 	err      error
 )
