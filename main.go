@@ -8,7 +8,7 @@ import (
 func main() {
 	database.StartDB()
 	
-	var PORT = ":7558"
+	var PORT = ":5583"
 
 	routers.StartServer().Run(PORT)
 }
