@@ -3,12 +3,13 @@ package main
 import (
 	"gin-api/database"
 	"gin-api/routers"
+	"os"
 )
 
 func main() {
 	database.StartDB()
 	
-	var PORT = ":5583"
+	var PORT = os.Getenv("PORT")
 
 	routers.StartServer().Run(PORT)
 }
