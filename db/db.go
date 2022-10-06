@@ -35,17 +35,17 @@ func InitializeDB() {
 		log.Fatal("Error connecting to database:", err.Error())
 	}
 
-	createTable := `
-		CREATE TABLE IF NOT EXISTS products (
-			id SERIAL PRIMARY KEY,
-			name VARCHAR(255) NOT NULL,
-			price NUMERIC NOT NULL,
-			stock smallint NOT NULL,
-			created_at timestamptz DEFAULT now()
-		)
-	`
+	// createTable := `
+	// 	CREATE TABLE IF NOT EXISTS products (
+	// 		id SERIAL PRIMARY KEY,
+	// 		name VARCHAR(255) NOT NULL,
+	// 		price NUMERIC NOT NULL,
+	// 		stock smallint NOT NULL,
+	// 		created_at timestamptz DEFAULT now()
+	// 	)
+	// `
 
-	_, err = db.Exec(createTable)
+	// _, err = db.Exec(createTable)
 
 	if err != nil {
 		log.Fatal("Error creating products table:", err.Error())
