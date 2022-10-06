@@ -1,71 +1,89 @@
 package controllers
 
 import (
+	"fmt"
+	"gin-api/database"
 	"gin-api/models"
-	"gin-api/service"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-//Kontrak Controllernya
-type CarController interface {
-	GetAllCars(c *gin.Context)
-	GetOneCars(c *gin.Context)
-	CreateCars(c *gin.Context)
-}
+func GetAllCars(c * gin.Context){
+	var db = database.GetDB()
 
-type carControllerImpl struct {
-	CarService service.CarService
-}
-
-//Inisiasi struct dengan kontrak interface
-func NewCarController(newCarService service.CarService) CarController {
-	return &carControllerImpl{
-		CarService: newCarService,
-	}
-}
-
-func (controller *carControllerImpl) GetAllCars(c *gin.Context) {
 	var cars []models.Car
-	res, err := controller.CarService.GetAllCars(&cars)
+	err := db.Find(&cars).Error
+
+	if err != nil {
+		fmt.Println("Error getting car datas :", err.Error())
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": cars})
+}
+
+func GetOneCars(c * gin.Context){
+	var db = database.GetDB()
+
+	var carOne models.Car
+	// err := db.Table("Car").Where("Id = ?", c.Param("id")).First(&car).Error
+	err := db.First(&carOne, "Id = ?", c.Param("id")).Error
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": res})
+
+	c.JSON(http.StatusOK, gin.H{"data One": carOne})
 }
 
-func (controller *carControllerImpl) GetOneCars(c *gin.Context) {
-	id := c.Param("id")
-	idint, err := strconv.Atoi(id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parameter False"})
-		return
-	}
-	res, err := controller.CarService.GetCarById(idint)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data One": res})
-}
-
-func (controller *carControllerImpl) CreateCars(c *gin.Context) {
+func CreateCars(c *gin.Context) {
+	var db = database.GetDB()
 	// Validate input
 	var input models.Car
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	// Create book
-	res, err := controller.CarService.CreateCars(&input)
 
+	// Create book
+	carinput := models.Car{Merk: input.Merk, Harga: input.Harga, Typecars: input.Typecars}
+	db.Create(&carinput)
+
+	c.JSON(http.StatusOK, gin.H{"data": carinput})
+}
+
+func UpdateCars(c *gin.Context){
+	var db = database.GetDB()
+	
+	var car models.Car
+	err := db.First(&car, "Id = ?", c.Param("id")).Error
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+	// Validate input
+	var input models.Car
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": res})
+	db.Model(&car).Updates(input)
+
+	c.JSON(http.StatusOK, gin.H{"data": car})
+}
+
+func DeleteCars(c *gin.Context){
+	var db = database.GetDB()
+	// Get model if exist
+	var carDelete models.Car
+	err := db.First(&carDelete, "Id = ?", c.Param("id")).Error; 
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+
+	db.Delete(&carDelete)
+
+	c.JSON(http.StatusOK, gin.H{"data": true})
 }

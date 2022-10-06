@@ -1,18 +1,20 @@
 package database
 
 import (
-	"log"
 	"fmt"
+	"gin-api/models"
+	"log"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var (
-	host     = "localhost"
+	host     = "containers-us-west-42.railway.app"
 	user     = "postgres"
-	password = "123456"
+	password = "PZD7xkuhWUiBgJTPf2lV"
 	dbPort   = "5433"
-	dbname   = "universal"
+	dbname   = "railway"
 	db       *gorm.DB
 	err      error
 )
@@ -24,6 +26,8 @@ func StartDB() {
 	if err != nil {
 		log.Fatal("error connecting to database :", err)
 	}
+
+	db.AutoMigrate(&models.Car{})
 }
 
 func GetDB() *gorm.DB {
